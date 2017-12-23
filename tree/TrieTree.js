@@ -12,6 +12,9 @@ class Node {
     this.children = this.children.filter( c => c !== child );
   }
 };
+
+//insert , remove , find --> O( min( string.length , depth ) ) --> basiclly O( 1 )
+//A very good DS to store unrelated string group
 class TrieTree {
   constructor( initStringGroup ){
     this.insert = this.insert.bind( this );
@@ -67,6 +70,7 @@ class TrieTree {
           find = true;
           if( --checkingNode.children[j].count === 0 ){
             checkingNode.removeChild( checkingNode.children[j] );
+            return;
           }
           checkingNode = checkingNode.children[j];
           break;
@@ -100,7 +104,7 @@ class TrieTree {
     }
     var sumCount = 0;
     for( let i = 0 ; i < checkingNode.children.length ; i++ ){
-      sumCount += checkingNode;
+      sumCount += checkingNode.children[i].count;
     }
     if( checkingNode.count === sumCount + 1 )
       return true;
