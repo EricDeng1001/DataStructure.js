@@ -16,30 +16,20 @@ class Node {
 //insert , remove , find --> O( min( string.length , depth ) ) --> basiclly O( 1 )
 //A very good DS to store unrelated string group
 class TrieTree {
-  constructor( initStringGroup ){
-    this.insert = this.insert.bind( this );
-    this.has = this.has.bind( this );
-    if( initStringGroup instanceof TrieTree ){
-      this.root = initStringGroup.root;
+  constructor( trieTreeRoot ){
+    if( trieTreeRoot ){
+      this.root = trieTreeRoot.root;
       return;
     }
-    this.root = new Node( null );
-    if( Array.isArray( initStringGroup ) ){
-      for( let i = 0 ; i < initStringGroup.length ; i++ ){
-        this.insert( initStringGroup[i] );
-      }
-    }
-    else {
-      if( initStringGroup ){
-        throw new Error("initStringGroup must be an array of string");
-      }
-    }
+    this.root = new Node('');
+    this.root.count = 0;
   }
 
   insert( string ){
     if( this.has( string ) ){
       return;
     }
+    this.root.count++;
     var checkingNode = this.root;
     var find = false;
     for( let i = 0; i < string.length ; i++ ){
@@ -111,6 +101,47 @@ class TrieTree {
     else {
       return false;
     }
+  }
+
+  dfr( func , vertex = this.root ){
+    var vistedNodes = new Set();
+    var path = [];
+    var res = [];
+    var node;
+    vistedNodes.add( vertex );
+    res.push( func( vertex ) );
+    path.unshift( vertex );
+    while( path.length !== 0 ){
+      node = path.shift();
+      for( let i = 0 ; i < node.children.length ; i++ ){
+        if( !vistedNodes.has( node.children[i] ) ){
+          path.push( node.children[i] );
+          vistedNodes.add( node.children[i] );
+          res.push( func( node.children[i] ) );
+          break;
+        }
+      }
+    }
+    return res;
+  }
+
+  __toArrayRecursive( root ){
+    var res = [];
+    var childString;
+    var stringed = 0;
+    for( let i = 0 ; i < root.children.length ; i++ ){
+      stringed += root.children[i].count;
+      childString = this.__toArrayRecursive( root.children[i] );
+      res = res.concat( childString.map( str => root.character + str ));
+    }
+    if( stringed === root.count - 1 ){
+      res.push( root.character );
+    }
+    return res;
+  }
+
+  toArray(){
+    return this.__toArrayRecursive( this.root );
   }
 };
 
